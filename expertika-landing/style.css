@@ -284,6 +284,36 @@ p {
     pointer-events: auto;
 }
 
+/* Standalone video section */
+.video-section {
+    padding: 0 0 2rem 0;
+    background: var(--background-color);
+}
+
+.video-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.15);
+}
+
+.video-media {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+/* Inline video inside hero */
+.hero-inline-video {
+    margin-top: 1rem;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.12);
+}
+
 /* Carousel */
 .carousel-viewport {
     overflow: hidden;
@@ -304,6 +334,8 @@ p {
 .carousel-item {
     flex: 0 0 100%;
     max-width: 100%;
+    cursor: default;
+    user-select: none;
 }
 
 /* Lightbox fullscreen */
