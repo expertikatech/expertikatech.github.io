@@ -274,6 +274,15 @@ p {
     margin: 0;
 }
 
+/* Shared subtitle style used on presentation page */
+.section-subtitle {
+    text-align: center;
+    max-width: 900px;
+    margin: 0 auto 2rem auto;
+    color: var(--secondary-text-color);
+    font-size: 1.1rem;
+}
+
 /* Contact Section */
 .contact {
     padding: 6rem 0;
