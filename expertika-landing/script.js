@@ -189,8 +189,14 @@ document.addEventListener('DOMContentLoaded', function() {
         if (isProgrammaticScroll) { e.preventDefault(); return; }
         const delta = e.deltaY || e.wheelDelta || (-e.detail);
         if (Math.abs(delta) < 5) return; // ignore tiny deltas
-        e.preventDefault();
         const current = getCurrentSectionIndex();
+        const isFirst = current === 0;
+        const isLast = current === sections.length - 1;
+        // Allow native scroll beyond first/last section (e.g., to show footer)
+        if ((delta < 0 && isFirst) || (delta > 0 && isLast)) {
+            return;
+        }
+        e.preventDefault();
         if (delta > 0) {
             scrollToSection(current + 1);
         } else {
