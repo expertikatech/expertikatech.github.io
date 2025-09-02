@@ -209,34 +209,48 @@ document.addEventListener('DOMContentLoaded', function() {
         const current = getCurrentSectionIndex();
         const isFirst = current === 0;
         const isLast = current === sections.length - 1;
-        // Allow native scroll beyond first/last section (e.g., to show footer)
-        if ((delta < 0 && isFirst) || (delta > 0 && isLast)) {
+        const section = sections[current];
+        const rect = section.getBoundingClientRect();
+        const headerHeight = getHeaderHeight();
+
+        // If scrolling down and section still has content below the viewport, allow native scroll
+        if (delta > 0) {
+            const visibleBottom = Math.min(rect.bottom, window.innerHeight);
+            const hasMoreBelow = rect.bottom - headerHeight > window.innerHeight + 2;
+            // If last section, allow native to reach footer fully
+            if (isLast || hasMoreBelow) return;
+            e.preventDefault();
+            scrollToSection(current + 1);
             return;
         }
-        e.preventDefault();
-        if (delta > 0) {
-            scrollToSection(current + 1);
-        } else {
+
+        // If scrolling up and we are not at the very top of the current section, allow native scroll
+        if (delta < 0) {
+            const hasMoreAbove = rect.top < headerHeight - 2;
+            // If first section, allow native to reach page top
+            if (isFirst || hasMoreAbove) return;
+            e.preventDefault();
             scrollToSection(current - 1);
+            return;
         }
     }
 
-    // Attach wheel handler (non-passive to allow preventDefault)
-    window.addEventListener('wheel', onWheel, { passive: false });
+    // Attach wheel handler (TEMPORARILY DISABLED)
+    // window.addEventListener('wheel', onWheel, { passive: false });
 
-    // Keyboard navigation for accessibility
-    window.addEventListener('keydown', (e) => {
-        if (isProgrammaticScroll) return;
-        const keysNext = ['PageDown', 'ArrowDown', ' '];
-        const keysPrev = ['PageUp', 'ArrowUp', 'Shift+ '];
-        const key = e.key;
-        if (keysNext.includes(key)) {
-            e.preventDefault();
-            scrollToSection(getCurrentSectionIndex() + 1);
-        } else if (keysPrev.includes(key)) {
-            e.preventDefault();
-            scrollToSection(getCurrentSectionIndex() - 1);
-        }
-    });
+    // Keyboard navigation for accessibility (TEMPORARILY DISABLED)
+    // window.addEventListener('keydown', (e) => {
+    //     if (isProgrammaticScroll) return;
+    //     const keysNext = ['PageDown', 'ArrowDown', ' '];
+    //     const keysPrev = ['PageUp', 'ArrowUp', 'Shift+ '];
+    //     const key = e.key;
+    //     if (keysNext.includes(key)) {
+    //         e.preventDefault();
+    //         scrollToSection(getCurrentSectionIndex() + 1);
+    //     } else if (keysPrev.includes(key)) {
+    //         e.preventDefault();
+    //         scrollToSection(getCurrentSectionIndex() - 1);
+    //     }
+    // });
 
 });
