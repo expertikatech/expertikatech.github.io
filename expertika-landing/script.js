@@ -145,6 +145,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         lightboxClose && lightboxClose.addEventListener('click', closeLightbox);
+        // Block saving via context menu while in lightbox
+        lightbox && lightbox.addEventListener('contextmenu', (e) => {
+            if (lightbox.classList.contains('is-open')) e.preventDefault();
+        });
         lightboxPrev && lightboxPrev.addEventListener('click', () => openLightboxByIndex(currentIndex - 1));
         lightboxNext && lightboxNext.addEventListener('click', () => openLightboxByIndex(currentIndex + 1));
         lightbox && lightbox.addEventListener('click', (e) => {

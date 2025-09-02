@@ -183,10 +183,10 @@ p {
 #solutions .card h3 { font-size: 1.5rem; }
 #solutions .card p { font-size: 0.95rem; }
 
-/* Increase space between card content and button on homepage */
-#solutions .card .btn {
-    margin-top: auto;
-}
+/* Keep buttons aligned consistently at the bottom of cards */
+#solutions .card .btn { margin-top: auto; }
+/* Add a bit of breathing room after the last paragraph */
+#solutions .card p:last-of-type { margin-bottom: 0.75rem; }
 
 .solutions-grid {
     display: grid;
@@ -324,6 +324,12 @@ p {
     max-height: 90vh;
     border-radius: 8px;
     box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    pointer-events: none;
 }
 
 .lightbox-close {
