@@ -59,6 +59,7 @@ document.addEventListener('DOMContentLoaded', function() {
         let prevTranslate = 0;
         let animationFrameId = null;
         const viewport = document.querySelector('.carousel-viewport');
+        const enableDrag = false; // disable drag to not interfere with fullscreen click
 
         function goTo(index) {
             if (index < 0) index = 0;
@@ -95,55 +96,67 @@ document.addEventListener('DOMContentLoaded', function() {
         carousel.addEventListener('dragstart', (e) => e.preventDefault());
         goTo(0);
 
-        // Drag/Swipe support with pointer events
-        function getEventX(e) {
-            if (e.type.startsWith('touch')) return e.touches[0].clientX;
-            return e.clientX;
+        // Drag/Swipe disabled to allow click-to-fullscreen without interference
+        if (enableDrag) {
+            function getEventX(e) { return e.type.startsWith('touch') ? e.touches[0].clientX : e.clientX; }
+            function setTranslateX(px) { const percent = (px / viewport.clientWidth) * 100; carousel.style.transform = `translateX(${percent}%)`; }
+            function onDragStart(e) { isDragging = true; startX = getEventX(e); carousel.classList.add('is-dragging'); cancelAnimationFrame(animationFrameId); }
+            function onDragMove(e) { if (!isDragging) return; const currentX = getEventX(e); const delta = currentX - startX; currentTranslate = prevTranslate + delta; setTranslateX(currentTranslate); }
+            function onDragEnd() { if (!isDragging) return; isDragging = false; carousel.classList.remove('is-dragging'); const movedBy = currentTranslate - prevTranslate; const threshold = viewport.clientWidth * 0.2; if (movedBy < -threshold) { next(); } else if (movedBy > threshold) { prev(); } else { goTo(currentIndex); } }
+            viewport.addEventListener('mousedown', onDragStart);
+            viewport.addEventListener('mousemove', onDragMove);
+            viewport.addEventListener('mouseup', onDragEnd);
+            viewport.addEventListener('mouseleave', onDragEnd);
+            viewport.addEventListener('touchstart', onDragStart, { passive: true });
+            viewport.addEventListener('touchmove', onDragMove, { passive: true });
+            viewport.addEventListener('touchend', onDragEnd);
         }
 
-        function setTranslateX(px) {
-            const percent = (px / viewport.clientWidth) * 100;
-            carousel.style.transform = `translateX(${percent}%)`;
+        // Lightbox fullscreen viewer
+        const lightbox = document.querySelector('.lightbox');
+        const lightboxImg = document.querySelector('.lightbox-image');
+        const lightboxClose = document.querySelector('.lightbox-close');
+        const lightboxPrev = document.querySelector('.lightbox-prev');
+        const lightboxNext = document.querySelector('.lightbox-next');
+
+        function openLightboxByIndex(index) {
+            if (index < 0) index = 0;
+            if (index > items.length - 1) index = items.length - 1;
+            currentIndex = index;
+            const imgEl = items[currentIndex].querySelector('.slide-image');
+            if (!imgEl) return;
+            lightboxImg.src = imgEl.getAttribute('src');
+            lightboxImg.alt = imgEl.getAttribute('alt') || '';
+            lightbox.classList.add('is-open');
+            document.body.style.overflow = 'hidden';
         }
 
-        function onDragStart(e) {
-            isDragging = true;
-            startX = getEventX(e);
-            carousel.classList.add('is-dragging');
-            cancelAnimationFrame(animationFrameId);
+        function closeLightbox() {
+            lightbox.classList.remove('is-open');
+            lightboxImg.src = '';
+            document.body.style.overflow = '';
         }
 
-        function onDragMove(e) {
-            if (!isDragging) return;
-            const currentX = getEventX(e);
-            const delta = currentX - startX;
-            currentTranslate = prevTranslate + delta;
-            setTranslateX(currentTranslate);
-        }
+        carousel.addEventListener('click', (e) => {
+            const img = e.target.closest && e.target.closest('.slide-image');
+            if (!img) return;
+            const index = items.findIndex(it => it.contains(img));
+            openLightboxByIndex(index >= 0 ? index : currentIndex);
+        });
 
-        function onDragEnd() {
-            if (!isDragging) return;
-            isDragging = false;
-            carousel.classList.remove('is-dragging');
-            const movedBy = currentTranslate - prevTranslate;
-            const threshold = viewport.clientWidth * 0.2;
-            if (movedBy < -threshold) {
-                next();
-            } else if (movedBy > threshold) {
-                prev();
-            } else {
-                // snap back
-                goTo(currentIndex);
-            }
-        }
-
-        viewport.addEventListener('mousedown', onDragStart);
-        viewport.addEventListener('mousemove', onDragMove);
-        viewport.addEventListener('mouseup', onDragEnd);
-        viewport.addEventListener('mouseleave', onDragEnd);
-        viewport.addEventListener('touchstart', onDragStart, { passive: true });
-        viewport.addEventListener('touchmove', onDragMove, { passive: true });
-        viewport.addEventListener('touchend', onDragEnd);
+        lightboxClose && lightboxClose.addEventListener('click', closeLightbox);
+        lightboxPrev && lightboxPrev.addEventListener('click', () => openLightboxByIndex(currentIndex - 1));
+        lightboxNext && lightboxNext.addEventListener('click', () => openLightboxByIndex(currentIndex + 1));
+        lightbox && lightbox.addEventListener('click', (e) => {
+            // click outside image closes
+            if (e.target === lightbox) closeLightbox();
+        });
+        window.addEventListener('keydown', (e) => {
+            if (!lightbox || !lightbox.classList.contains('is-open')) return;
+            if (e.key === 'Escape') closeLightbox();
+            if (e.key === 'ArrowRight') openLightboxByIndex(currentIndex + 1);
+            if (e.key === 'ArrowLeft') openLightboxByIndex(currentIndex - 1);
+        });
     }
 
     // Full-page wheel navigation between main sections

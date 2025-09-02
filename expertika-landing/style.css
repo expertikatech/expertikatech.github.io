@@ -173,6 +173,7 @@ p {
     grid-template-columns: repeat(2, 1fr);
     gap: 1.5rem;
     margin-top: 1rem;
+    align-items: stretch;
 }
 
 #solutions .card {
@@ -184,7 +185,7 @@ p {
 
 /* Increase space between card content and button on homepage */
 #solutions .card .btn {
-    margin-top: 2rem;
+    margin-top: auto;
 }
 
 .solutions-grid {
@@ -280,7 +281,7 @@ p {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
-    pointer-events: none;
+    pointer-events: auto;
 }
 
 /* Carousel */
@@ -305,6 +306,59 @@ p {
     max-width: 100%;
 }
 
+/* Lightbox fullscreen */
+.lightbox {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.8);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+}
+
+.lightbox.is-open { display: flex; }
+
+.lightbox-image {
+    max-width: 95vw;
+    max-height: 90vh;
+    border-radius: 8px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+
+.lightbox-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255,255,255,0.9);
+    color: #111;
+    font-size: 20px;
+    cursor: pointer;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+}
+
+.lightbox-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255,255,255,0.9);
+    color: #111;
+    font-size: 22px;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+}
+
+.lightbox-prev { left: 16px; }
+.lightbox-next { right: 16px; }
+
 .carousel-controls {
     position: absolute;
     top: 50%;
@@ -313,6 +367,8 @@ p {
     transform: translateY(-50%);
     pointer-events: none;
     z-index: 2;
+    opacity: 0;
+    transition: opacity 0.25s ease;
 }
 
 .carousel-btn {
@@ -333,6 +389,11 @@ p {
 
 .carousel-prev { position: absolute; left: 8px; }
 .carousel-next { position: absolute; right: 8px; }
+
+/* Show controls only on hover over slides */
+.carousel-viewport:hover .carousel-controls {
+    opacity: 1;
+}
 
 @media (max-width: 768px) {
     .carousel-item { flex-basis: 100%; }
@@ -406,6 +467,10 @@ p {
 @media (max-width: 992px) {
     .solutions-grid {
         grid-template-columns: 1fr;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
     }
 }
 
