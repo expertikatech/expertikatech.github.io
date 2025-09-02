@@ -403,6 +403,53 @@ p {
 
 @media (max-width: 768px) {
     .carousel-item { flex-basis: 100%; }
+    /* Presentation mobile tweaks */
+    .slides .container { max-width: 100%; padding: 0 12px; }
+    .section-subtitle { font-size: 1rem; margin: 0 auto 1rem auto; }
+    .slide-image { border-radius: 8px; }
+    /* Place controls below slide on mobile so they don't cover content */
+    .carousel-viewport { position: static; }
+    .carousel-controls {
+        position: static;
+        transform: none;
+        pointer-events: auto;
+        opacity: 1;
+        display: flex;
+        justify-content: center;
+        gap: 0.75rem;
+        margin-top: 0.75rem;
+    }
+    .carousel-prev, .carousel-next { position: static; }
+    .carousel-btn { width: 40px; height: 40px; font-size: 18px; }
+
+    /* Lightbox: place nav buttons below image on mobile (only when open) */
+    .lightbox.is-open {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto 1fr auto;
+        align-items: center;
+        justify-items: center;
+        padding: 12px;
+    }
+    .lightbox.is-open .lightbox-close {
+        position: static;
+        grid-column: 2;
+        grid-row: 1;
+        justify-self: end;
+    }
+    .lightbox.is-open .lightbox-image {
+        grid-column: 1 / span 2;
+        grid-row: 2;
+        max-width: 96vw;
+        max-height: 72vh;
+    }
+    .lightbox.is-open .lightbox-prev, .lightbox.is-open .lightbox-next {
+        position: static;
+        grid-row: 3;
+    }
+    .lightbox.is-open .lightbox-prev { grid-column: 1; }
+    .lightbox.is-open .lightbox-next { grid-column: 2; }
+    .lightbox.is-open .lightbox-nav { width: 44px; height: 44px; font-size: 18px; }
 }
 
 /* Presentation layout: make slides large and readable */
