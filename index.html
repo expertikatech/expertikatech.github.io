@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Expertika TalkTrack — Стратегическое преимущество в каждом совещании</title>
+  <link rel="icon" href="./assets/logo.png" />
+  <link rel="stylesheet" href="./css/styles.css" />
+  <!-- Если у тебя есть Google- или локальный шрифт Banshrift, подключай ниже.
+       В папке assets/fonts/ положи Banshrift-Light.woff2 и Banshrift-Regular.woff2
+       Если шрифтов нет — будут использоваться запасные системные шрифты. -->
+</head>
+<body>
+  <!-- Динамическая карточка (фиксированная). Меняется по скроллу. -->
+  <aside id="dynamic-card" class="dynamic-card" aria-hidden="false">
+    <div class="dyn-icon" id="dyn-icon">🎙️</div>
+    <h3 id="dyn-title">Стратегическое преимущество</h3>
+    <p id="dyn-text">Expertika TalkTrack фиксирует ключевые решения и формирует готовый протокол.</p>
+  </aside>
+
+  <!-- HERO -->
+  <header class="hero" id="hero">
+    <video class="hero-video" id="heroVideo" autoplay muted loop playsinline>
+      <!-- Заменить путь на /assets/cover-video.mp4 -->
+      <source src="./assets/cover-video.mp4" type="video/mp4" />
+      <!-- Если видео нет — будет fallback-серый фон -->
+    </video>
+    <div class="hero-overlay"></div>
+
+    <div class="hero-inner container">
+      <img src="./assets/logo.png" alt="Expertika TalkTrack logo" class="logo" id="logo" />
+      <h1 class="hero-title">Стратегическое преимущество в каждом совещании</h1>
+      <p class="hero-sub">ИИ-модератор, который фиксирует, анализирует и превращает диалог в управленческое решение. 100% локально.</p>
+      <div class="hero-cta">
+        <a href="#demo" class="btn primary">Посмотреть демо</a>
+        <a href="#contacts" class="btn ghost">Запросить демо</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Product intro -->
+    <section class="section container" id="product">
+      <div class="col-left">
+        <h2 class="sec-title">Каждое совещание без четкой фиксации — это риск</h2>
+        <p class="sec-lead">Ключевые моменты и гениальные идеи, если не зафиксированы в момент озвучивания, теряются. Expertika TalkTrack автоматизирует фиксацию, анализ и отчётность — так, чтобы решения оставались зафиксированными, а ответственность — ясной.</p>
+      </div>
+      <div class="col-right">
+        <!-- Здесь динамический контент при scrollytelling (опционально) -->
+        <div class="card">
+          <h4>Проблемы</h4>
+          <ul>
+            <li>Утрата стратегических идей</li>
+            <li>Решения без ответственности</li>
+            <li>Финансовые потери на повторные обсуждения</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section class="section section-alt" id="features">
+      <div class="container">
+        <h2 class="sec-title">Ключевые возможности</h2>
+        <p class="sec-lead">Запись и транскрибация, интеллектуальный анализ, подсказки в реальном времени и мгновенный отчёт — всё настроено под ваши правила.</p>
+
+        <div class="grid features-grid">
+          <article class="feature" data-dyn-title="Запись и транскрибация" data-dyn-text="Система фиксирует звук из любого источника и мгновенно преобразует речь в текст.">
+            <div class="feature-ico">🎙️</div>
+            <h3>Запись и транскрибация</h3>
+            <p>Работает с файловыми записями, микрофонами и платформами видеосвязи.</p>
+          </article>
+
+          <article class="feature" data-dyn-title="Интеллектуальный анализ" data-dyn-text="ИИ выделяет ключевые темы, задачи, ответственных и сроки.">
+            <div class="feature-ico">🧠</div>
+            <h3>Интеллектуальный анализ</h3>
+            <p>Автоматическая структура диалога, удаление слов-паразитов и выделение задач.</p>
+          </article>
+
+          <article class="feature" data-dyn-title="Подсказки в реальном времени" data-dyn-text="Виртуальный модератор следит за повесткой и сигнализирует об отклонениях.">
+            <div class="feature-ico">🕹️</div>
+            <h3>Подсказки в реальном времени</h3>
+            <p>Помогает не упустить важные вопросы и держать встречу в рамках повестки.</p>
+          </article>
+
+          <article class="feature" data-dyn-title="Мгновенный отчёт" data-dyn-text="Готовый, стилистически выверенный протокол — сразу после встречи.">
+            <div class="feature-ico">📄</div>
+            <h3>Мгновенный отчёт</h3>
+            <p>Форматируем и отправляем отчёты по корпоративным шаблонам.</p>
+          </article>
+
+          <article class="feature" data-dyn-title="100% локальная установка" data-dyn-text="Никаких облаков — все данные остаются в периметре вашей компании.">
+            <div class="feature-ico">🔒</div>
+            <h3>100% локальная установка</h3>
+            <p>Идеально для компаний с высокими требованиями к безопасности.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tech -->
+    <section class="section container" id="tech">
+      <div class="col-left">
+        <h2 class="sec-title">Инфраструктура и безопасность</h2>
+        <p class="sec-lead">On-prem развёртывание, Docker/K8s, локальные коннекторы для интеграции с таск-менеджерами и календарями. Никаких внешних API по умолчанию.</p>
+      </div>
+      <div class="col-right">
+        <div class="card">
+          <h4>Технические тезисы</h4>
+          <ul>
+            <li>Развёртывание: Docker / Kubernetes</li>
+            <li>Интеграции: Jira, Trello, internal APIs</li>
+            <li>Настраиваемый анализ по шаблонам</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Team -->
+    <section class="section section-alt" id="team">
+      <div class="container">
+        <h2 class="sec-title">Компания и команда</h2>
+        <p class="sec-lead">Продукт представлен ИТ-компанией "НОРД". Команда — инженеры по голосовым технологиям и enterprise-безопасности.</p>
+
+        <div class="team-grid">
+          <div class="person">
+            <img src="./assets/team/person1.png" alt="Иван Петров" />
+            <div class="person-name">Иван Петров</div>
+            <div class="person-role">CEO</div>
+          </div>
+          <div class="person">
+            <img src="./assets/team/person1.png" alt="Анна Смирнова" />
+            <div class="person-name">Анна Смирнова</div>
+            <div class="person-role">CTO</div>
+          </div>
+          <div class="person">
+            <img src="./assets/team/person1.png" alt="Мария" />
+            <div class="person-name">Мария К.</div>
+            <div class="person-role">Product</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Demo -->
+    <section class="section container" id="demo">
+      <h2 class="sec-title">Мини-демонстрация</h2>
+      <p class="sec-lead">Короткий ролик показывает движение: запись → транскрибация → анализ → отчёт.</p>
+
+      <div class="video-wrap">
+        <video controls playsinline>
+          <!-- Путь: ./assets/demo-video.mp4 -->
+          <source src="./assets/cover-video.mp4" type="video/mp4" />
+          Тег video не поддерживается вашим браузером.
+        </video>
+      </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="section section-alt container" id="testimonials">
+      <h2 class="sec-title">Отзывы</h2>
+      <p class="sec-lead">Пока что место для первых кейсов — сюда будем вставлять реальные отзывы клиентов.</p>
+      <div class="card">
+        <em>Здесь появятся отзывы ваших первых клиентов. Пока что — пусто.</em>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="section container" id="cta">
+      <h2 class="sec-title">Готовы управлять встречами осознанно?</h2>
+      <p class="sec-lead">Запросите демонстрацию решения в вашем периметре — покажем работу на реальных данных.</p>
+      <div class="hero-cta" style="justify-content:center;">
+        <a href="mailto:hello@expertika.example" class="btn primary">Запросить демо</a>
+        <a href="#contacts" class="btn ghost">Написать нам</a>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer" id="contacts">
+    <div class="container footer-inner">
+      <div class="brand">
+        <img src="./assets/logo.png" alt="logo" />
+        <div class="brand-text">Expertika TalkTrack — продукт НОРД</div>
+      </div>
+      <div class="contacts">
+        <div class="contact-item">hello@expertika.example</div>
+        <div class="contact-item">+7 (---) --- ----</div>
+        <div class="contact-item">© <span id="year"></span> НОРД</div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="./js/main.js"></script>
+</body>
+</html>
