@@ -1,134 +1,140 @@
 // main.js
-// Чистый JS: отвечает за взаимодействия при скролле:
-// - параллакс фонового видео
-// - подсветка / обновление динамической карточки при входе в разные блоки
-// - плавный скролл для внутренних ссылок
-// - небольшие анимации появления с использованием IntersectionObserver
+// Скролл-презентация на чистом JS.
+// Основная идея:
+// - На каждом кадре берём видимый прогресс секции (0..1)
+// - Для элементов с классами anim-* применяем стили, зависящие от прогресса:
+//    * scale заголовков
+//    * translateX/translateY и opacity для slide/slide-left/right/fade
+// - IntersectionObserver используем как дополнительный триггер для включения inview, но основная логика — прогресс
 
-document.addEventListener('DOMContentLoaded', () => {
-  // Устанавливаем текущее год в футере
-  const yearEl = document.getElementById('year');
-  if (yearEl) yearEl.textContent = new Date().getFullYear();
+(function(){
+  // Утилиты
+  const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
 
-  // Параллакс для фонового видео: немного увеличиваем scale при прокрутке
-  const hero = document.getElementById('hero');
-  const heroVideo = document.getElementById('heroVideo');
+  // Сбор всех секций, которые анализируем
+  const sections = Array.from(document.querySelectorAll('.section'));
 
-  function onScrollParallax() {
-    if (!heroVideo) return;
-    const rect = hero.getBoundingClientRect();
-    // rect.top = 0 когда герой вверху экрана. Используем отрицательные значения.
-    const progress = Math.min(Math.max(-rect.top / (rect.height || 1), 0), 1);
-    // scale от 1 до 1.12
-    const scale = 1 + progress * 0.12;
-    heroVideo.style.transform = `scale(${scale})`;
+  // Список элементов-аниматоров внутри секций
+  function collectAnimElems(section){
+    return Array.from(section.querySelectorAll('.anim-scale, .anim-fade, .anim-slide-up, .anim-slide-left, .anim-slide-right'));
   }
 
-  window.addEventListener('scroll', onScrollParallax, { passive: true });
-  onScrollParallax();
+  // Map: section -> anim elems
+  const sectionData = sections.map(sec => ({
+    el: sec,
+    elems: collectAnimElems(sec)
+  }));
 
-  // Плавный скролл для якорей
-  document.querySelectorAll('a[href^="#"]').forEach(a => {
-    a.addEventListener('click', (e) => {
-      const href = a.getAttribute('href');
-      if (href.length > 1) {
-        e.preventDefault();
-        const target = document.querySelector(href);
-        if (target) {
-          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      }
+  // Для отключения heavy calc при неактивности вкладки
+  let ticking = false;
+
+  function update(){
+    ticking = false;
+    const viewportH = window.innerHeight;
+    const viewportCenter = viewportH / 2;
+
+    sectionData.forEach(sdata => {
+      const rect = sdata.el.getBoundingClientRect();
+      const secTop = rect.top;
+      const secH = rect.height || 1;
+
+      // Вычисляем "прогресс": как далеко центр viewport прошёл через секцию.
+      // p = 0 когда секция только появляется, p = 1 когда секция прошла и центр уже ниже её bottom.
+      let p = (viewportCenter - secTop) / secH; // can be negative/ >1
+      p = clamp(p, 0, 1);
+
+      // Для устойчивости можно применять сглаживание (lerp) — но пока прямое применение.
+      // В зависимости от этого прогресса обновляем дочерние элементы
+      sdata.elems.forEach(el => applyProgressToElement(el, p));
     });
-  });
+  }
 
-  // IntersectionObserver для "появления" секций
-  const appearObserver = new IntersectionObserver((entries) => {
-    entries.forEach(en => {
-      if (en.isIntersecting) {
-        en.target.classList.add('inview');
-      } else {
-        // можно удалять, но оставляем один раз показанным
-        // en.target.classList.remove('inview');
+  // Apply progress to element according to its classes
+  function applyProgressToElement(el, p){
+    // base sizes for scaling: read dataset 'data-base-size' optionally
+    const baseSize = parseFloat(el.dataset.baseSize) || null;
+
+    // anim-scale: масштаб зависит от p (при p=0 small, при p=1 big)
+    if (el.classList.contains('anim-scale')){
+      // scale from 0.85 -> 1.02 around p
+      const min = 0.86, max = 1.02;
+      const s = min + (max - min) * p;
+      el.style.transform = `scale(${s})`;
+      // optionally change font size by scaling text: if baseSize set, adjust font-size
+      if (baseSize){
+        el.style.fontSize = (baseSize * s) + 'px';
       }
+      el.style.opacity = 0.95 + 0.05 * p;
+    }
+
+    // anim-fade: opacity 0->1, translateY 18->0
+    if (el.classList.contains('anim-fade')){
+      const ty = 18 - 18 * p;
+      el.style.transform = `translateY(${ty}px)`;
+      el.style.opacity = `${p}`;
+    }
+
+    // anim-slide-up
+    if (el.classList.contains('anim-slide-up')){
+      const ty = 28 - 28 * p; // 28px -> 0
+      el.style.transform = `translateY(${ty}px)`;
+      el.style.opacity = `${p}`;
+      // slight scale for dramatic effect
+      const sc = 0.98 + 0.02 * p;
+      el.style.transform += ` scale(${sc})`;
+    }
+
+    // anim-slide-left
+    if (el.classList.contains('anim-slide-left')){
+      const tx = -80 + 80 * p; // -80px -> 0
+      el.style.transform = `translateX(${tx}px)`;
+      el.style.opacity = `${p}`;
+    }
+
+    // anim-slide-right
+    if (el.classList.contains('anim-slide-right')){
+      const tx = 80 - 80 * p;
+      el.style.transform = `translateX(${tx}px)`;
+      el.style.opacity = `${p}`;
+    }
+
+    // Special case: feature-blocks — introduce stagger based on data-order
+    if (el.classList.contains('feature-block')){
+      const order = parseInt(el.dataset.order || 0);
+      // tie p to order: start showing when p > 0.12 + order*0.08
+      const start = 0.12 + order * 0.06;
+      const localP = clamp((p - start) / (0.6 - start), 0, 1);
+      el.style.opacity = `${localP}`;
+      const ty = 24 - 24 * localP;
+      el.style.transform = `translateY(${ty}px)`;
+      const scale = 0.98 + 0.02 * localP;
+      el.style.transform += ` scale(${scale})`;
+    }
+  }
+
+  // Hook scroll + resize
+  function onScroll(){
+    if (!ticking){
+      ticking = true;
+      requestAnimationFrame(update);
+    }
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  window.addEventListener('resize', onScroll);
+
+  // Initial update
+  onScroll();
+
+  // Bonus: IntersectionObserver fallback to add 'inview' for elements when they cross threshold (nice for non-js/slow)
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(en => {
+      if (en.isIntersecting) en.target.classList.add('inview');
     });
   }, { threshold: 0.12 });
+  document.querySelectorAll('.anim-fade, .anim-slide-up, .anim-slide-left, .anim-slide-right').forEach(el => io.observe(el));
 
-  document.querySelectorAll('.section, .feature, .card').forEach(el => {
-    appearObserver.observe(el);
-  });
+  // set current year in footer
+  const y = document.getElementById('year');
+  if (y) y.textContent = new Date().getFullYear();
 
-  // IntersectionObserver для динамической карточки:
-  // Когда определённый "маркер" попадает в viewport, обновляем содержимое.
-  const dynamicCard = {
-    titleEl: document.getElementById('dyn-title'),
-    textEl: document.getElementById('dyn-text'),
-    iconEl: document.getElementById('dyn-icon')
-  };
-
-  // Определяем элементы, которые будут менять динамику — в нашем случае
-  // это карточки .feature и некоторые секции с data-атрибутами.
-  const dynTargets = document.querySelectorAll('[data-dyn-title], #product, #tech, #team, #demo');
-
-  const dynObserver = new IntersectionObserver((entries) => {
-    // выбираем наиболее видимый элемент (largest intersectionRatio)
-    let best = null;
-    entries.forEach(en => {
-      if (en.isIntersecting) {
-        if (!best || en.intersectionRatio > best.intersectionRatio) best = en;
-      }
-    });
-    if (best) {
-      const el = best.target;
-      // если элемент имеет data-dyn-* — используем их, иначе берем секцию по id
-      const newTitle = el.dataset.dynTitle || (el.id === 'product' ? 'Проблемы совещаний' :
-                        el.id === 'tech' ? 'Инфраструктура и безопасность' :
-                        el.id === 'team' ? 'Команда НОРД' :
-                        el.id === 'demo' ? 'Мини-демонстрация' : null);
-      const newText = el.dataset.dynText || (el.id === 'product' ? 'Утрата идей, решения без ответственности и финансовые потери.' :
-                        el.id === 'tech' ? 'On-prem, Docker/K8s, локальные коннекторы, настройка шаблонов.' :
-                        el.id === 'team' ? 'Инженеры в голосовых технологиях и безопасности.' :
-                        el.id === 'demo' ? 'Краткий ролик: запись → транскрибация → отчёт.' : null);
-      const newIcon = el.dataset.dynIcon || '🎯';
-
-      // обновляем DOM (с плавностью)
-      if (dynamicCard.titleEl && dynamicCard.textEl && dynamicCard.iconEl) {
-        // простая анимация: уменьшить opacity -> поменять -> появиться
-        dynamicCard.titleEl.style.opacity = 0;
-        dynamicCard.textEl.style.opacity = 0;
-        dynamicCard.iconEl.style.opacity = 0;
-        setTimeout(() => {
-          dynamicCard.titleEl.textContent = newTitle || dynamicCard.titleEl.textContent;
-          dynamicCard.textEl.textContent = newText || dynamicCard.textEl.textContent;
-          dynamicCard.iconEl.textContent = newIcon || dynamicCard.iconEl.textContent;
-          dynamicCard.titleEl.style.opacity = 1;
-          dynamicCard.textEl.style.opacity = 1;
-          dynamicCard.iconEl.style.opacity = 1;
-        }, 180);
-      }
-    }
-  }, {
-    threshold: [0.35, 0.6, 0.9] // срабатывает когда элемент становится заметен
-  });
-
-  dynTargets.forEach(t => dynObserver.observe(t));
-
-  // Дополнительно: интерактивность feature — при наведении обновляем динамическую карточку
-  document.querySelectorAll('.feature').forEach(f => {
-    f.addEventListener('mouseenter', () => {
-      const t = f.dataset.dynTitle;
-      const txt = f.dataset.dynText;
-      const ico = f.querySelector('.feature-ico') ? f.querySelector('.feature-ico').textContent : '✨';
-      if (dynamicCard.titleEl) dynamicCard.titleEl.textContent = t;
-      if (dynamicCard.textEl) dynamicCard.textEl.textContent = txt;
-      if (dynamicCard.iconEl) dynamicCard.iconEl.textContent = ico;
-    });
-  });
-
-  // Небольшая оптимизация: отключаем тяжелые обработчики при visibilitychange
-  document.addEventListener('visibilitychange', () => {
-    if (document.hidden) {
-      // можно сделать что-то при сворачивании (пока ничего)
-    }
-  });
-
-});
+})();
