@@ -77,7 +77,7 @@ body{
 /* Team */
 .team-row{ display:flex; gap:24px; justify-content:center; margin-top:24px; flex-wrap:wrap; }
 .person{ text-align:center; width:160px; }
-.person img{ width:140px; height:140px; object-fit:cover; border-radius:50%; border:6px solid rgba(69,62,122,0.06); }
+.person img{ width:140px; height:140px; object-fit:cover; /*border-radius:50%; border:6px solid rgba(69,62,122,0.06);*/ }
 .pname{ margin-top:10px; font-weight:700; color:var(--heading); }
 .prole{ color:var(--muted); font-size:14px; }
 
@@ -92,7 +92,7 @@ body{
 /* Buttons */
 .btn{ padding:12px 20px; border-radius:10px; text-decoration:none; font-weight:800; letter-spacing:0.3px; display:inline-block; }
 .btn.primary{ background:var(--heading); color:white; }
-.btn.ghost{ background:transparent; color:var(--heading); border:1px solid rgba(69,62,122,0.06); }
+.btn.ghost{ background:transparent; color:white; border:1px solid white; }
 
 /* Footer */
 .footer-inner{ display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
