@@ -40,7 +40,7 @@
 
       // Вычисляем "прогресс": как далеко центр viewport прошёл через секцию.
       // p = 0 когда секция только появляется, p = 1 когда секция прошла и центр уже ниже её bottom.
-      let p = (viewportCenter - secTop) / secH; // can be negative/ >1
+      let p = (viewportCenter - secTop) / (secH * 0.5); // can be negative/ >1
       p = clamp(p, 0, 1);
 
       // Для устойчивости можно применять сглаживание (lerp) — но пока прямое применение.
